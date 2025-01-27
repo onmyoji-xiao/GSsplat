@@ -1,0 +1,4 @@
+replica/office_4/Sequence_1
+replica/office_4/Sequence_2
+replica/room_2/Sequence_1
+replica/room_2/Sequence_2
