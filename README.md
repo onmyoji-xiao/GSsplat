@@ -1,2 +1,3 @@
-# GSsplat
-The codes of GSsplat, a generalizable Gaussian Splatting method for semantic and color synthesis.
+# GSsplat: Generalizable Semantic Gaussian Splatting for Novel-view Synthesis in 3D Scenes
+
+
