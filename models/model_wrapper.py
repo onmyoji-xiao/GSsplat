@@ -38,70 +38,6 @@ def convert_to_buffer(module: nn.Module, persistent: bool = True):
         delattr(module, name)
         module.register_buffer(name, value, persistent=persistent)
 
-
-def image_to_pointcloud(imgs, depths, C2W, intrinsics):
-    """
-    将批次图像+深度图投影为带颜色的世界坐标系点云
-
-    Args:
-        imgs: (B, 3, H, W)     —— RGB图像
-        depths: (B, H, W)      —— 深度图
-        C2W: (B, 4, 4)         —— 相机到世界坐标变换矩阵
-        intrinsics: (B, 3, 3)  —— 相机内参矩阵 K
-
-    Returns:
-        points_world: (B, H*W, 3) —— 世界坐标系下的3D点
-        rgbs: (B, H*W, 3)         —— 对应RGB颜色
-    """
-    B, _, H, W = imgs.shape
-    device = imgs.device
-
-    # Step 1: 生成像素坐标网格 (x, y)
-    y, x = torch.meshgrid(
-        torch.arange(H, dtype=torch.float32, device=device),
-        torch.arange(W, dtype=torch.float32, device=device),
-        indexing='ij'
-    )  # (H, W)
-    x = x.reshape(-1)  # (H*W,)
-    y = y.reshape(-1)  # (H*W,)
-
-    # 扩展到 batch 维度
-    x = x.unsqueeze(0).expand(B, -1)  # (B, N)
-    y = y.unsqueeze(0).expand(B, -1)  # (B, N)
-    z = depths.reshape(B, -1)  # (B, N) —— 真实深度值！
-
-    # Step 2: 构建齐次像素坐标 (x, y, 1) → 但这里我们用深度 z 缩放
-    pixel_coords = torch.stack([x, y, torch.ones_like(z)], dim=1)  # (B, 3, N)
-
-    # Step 3: 用内参逆矩阵投影到相机坐标系
-    intrinsics_inv = torch.inverse(intrinsics)  # (B, 3, 3)
-    cam_coords = torch.bmm(intrinsics_inv, pixel_coords)  # (B, 3, N)
-
-    # 用深度缩放，得到真实的相机坐标系3D点（不是单位射线！）
-    cam_coords = cam_coords * z.unsqueeze(1)  # (B, 3, N) —— 关键！深度缩放
-
-    # Step 4: 转换到世界坐标系
-    # 添加齐次坐标 1 → (B, 4, N)
-    cam_coords_homogeneous = torch.cat([
-        cam_coords,
-        torch.ones(B, 1, cam_coords.shape[-1], device=device)
-    ], dim=1)  # (B, 4, N)
-
-    # 应用 C2W 变换
-    world_coords_homogeneous = torch.bmm(C2W, cam_coords_homogeneous)  # (B, 4, N)
-
-    # 去除齐次坐标（除以 w，通常为1，但安全起见）
-    points_world = world_coords_homogeneous[:, :3, :] / world_coords_homogeneous[:, 3:4, :]  # (B, 3, N)
-
-    # 转置为 (B, N, 3)
-    points_world = points_world.transpose(1, 2)  # (B, N, 3)
-
-    # Step 5: 提取对应 RGB 颜色
-    rgbs = imgs.permute(0, 2, 3, 1).reshape(B * H * W, 3)  # (B, H, W, 3) -> (B, N, 3)
-    points_world = points_world.reshape(B * H * W, 3)
-    return points_world, rgbs
-
-
 class ModelWrapper(LightningModule):
     def __init__(
             self,
@@ -153,63 +89,6 @@ class ModelWrapper(LightningModule):
             self.semantic_loss = nn.CrossEntropyLoss(weight=class_weights)
         # self.semantic_3d_loss = nn.CosineEmbeddingLoss(reduction='mean')
         self.miou = IoU(num_classes=self.model_cfg.nb_class - 1, ignore_label=self.model_cfg.ignore_label)
-
-    # def get_extra_loss(self, sem_2d_logits, ref_labels, semfeat_2d, gs_points):
-    #     b, v, _, _ = ref_labels.shape
-    #     stride = ref_labels.shape[-1] // semfeat_2d.shape[-1]
-    #     if stride > 1:
-    #         ref_labels = ref_labels[:, :, ::int(stride), ::int(stride)]
-    #         sem_2d_logits = sem_2d_logits[:, ::int(stride), ::int(stride)]
-    #
-    #     ref_labels = rearrange(ref_labels, "b v h w -> b (v h w)")
-    #     semantic_pred = rearrange(torch.argmax(sem_2d_logits, dim=-1), "(b v) h w -> b (v h w)", b=b, v=v)
-    #     semfeat_2d = rearrange(semfeat_2d, "(b v) c h w -> b (v h w) c", b=b, v=v)
-    #     acc_mask = (ref_labels == semantic_pred)
-    #     acc_pred = ref_labels.clone()
-    #
-    #     # semfeat_2d = F.max_pool1d(semfeat_2d, kernel_size=2, stride=2)
-    #     sem_3d_loss = 0.0
-    #     for semfeat_2d_i, acc_pred_i, acc_mask_i, ref_label_i, points_i in zip(semfeat_2d, acc_pred, acc_mask,
-    #                                                                            ref_labels, gs_points):
-    #         inter_loss, outer_loss = 0.0, 0.0
-    #         block_points, block_feats = [], []
-    #         c_ids, mapping = torch.unique(acc_pred_i, return_inverse=True)
-    #         for c in c_ids:
-    #             c_feat_list = semfeat_2d_i[ref_label_i == c]
-    #             c_points = points_i[ref_label_i == c]
-    #             if len(c_feat_list) < 2:
-    #                 continue
-    #             c_points = c_points // ((self.model_cfg.far - self.model_cfg.near) / 100)
-    #             c_block_points, block_id_mapping = torch.unique(c_points.clone(), dim=0, return_inverse=True)
-    #             c_block_feats = torch_scatter.scatter(c_feat_list, block_id_mapping, dim=0, reduce='mean')
-    #
-    #             cfeats_a = c_block_feats[block_id_mapping]
-    #             cfeats_b = c_feat_list
-    #             sim = F.cosine_similarity(cfeats_a, cfeats_b, dim=1)
-    #             inter_loss = inter_loss + torch.mean(1 - sim)
-    #
-    #             block_points.append(c_block_points)
-    #             block_feats.append(c_block_feats)
-    #
-    #         block_points = torch.concat(block_points)
-    #         block_feats = torch.concat(block_feats)
-    #
-    #         _, mapping = torch.unique(block_points.detach(), dim=0, return_inverse=True)
-    #         m_n = 0
-    #         for i in torch.unique(mapping):
-    #             n_feats = block_feats[mapping == i]
-    #             cnum = len(n_feats)
-    #             if cnum < 2:
-    #                 continue
-    #             m_n += 1
-    #             target = (torch.eye(cnum) * 2 - 1).ravel().to(n_feats.device)
-    #             cfeats_a = repeat(n_feats, "n c -> (n x) c", x=cnum)
-    #             cfeats_b = repeat(n_feats, "n c -> (x n) c", x=cnum)
-    #             outer_loss = outer_loss + self.semantic_3d_loss(cfeats_a, cfeats_b, target)
-    #         outer_loss = outer_loss / m_n if m_n > 0 else 0.0
-    #
-    #         sem_3d_loss = sem_3d_loss + inter_loss + outer_loss
-    #     return sem_3d_loss / b
 
     def target_depth_loss(self, gsmeans, ori_depth, intrinsics, extrinsics, offset_mask):
         B, V, H, W = ori_depth.shape
@@ -379,60 +258,6 @@ class ModelWrapper(LightningModule):
             device = batch['imgs'].device
             sem_gs, rgb_gs, semfeat_2d, sem_2d_logits, depth_maps, offset_dict = self.encoder(batch)
 
-            # for i in range(ori_depths[0].shape[0]):
-            #     r_dep = (ori_depths[0, i] / 6.0).clip(0, 1).cpu().numpy()
-            #     r_dep = (r_dep * 255.0).astype(np.uint8)
-            #     cv2.imwrite(f'./example_{i}.png', r_dep)
-
-            scene_name = batch['scene_name'][0]
-            if scene_name == 'scene0067_00':
-                x = 1
-                rimgs = batch['imgs'][0, :8]
-                rc2ws = batch['poses'][0, :8]
-                rintrinsics = batch['intrinsics'][0, :8]
-                rdepths = batch['depths'][0, :8]
-                points_world, rgbs = image_to_pointcloud(rimgs, rdepths, rc2ws, rintrinsics)
-
-                pcd_o3d = o3d.geometry.PointCloud()
-                pcd_o3d.points = o3d.utility.Vector3dVector(points_world.cpu().numpy())
-                pcd_o3d.colors = o3d.utility.Vector3dVector(rgbs.cpu().numpy())
-                o3d.io.write_point_cloud(f"{scene_name}.ply", pcd_o3d)
-                #
-                # gs_points = rgb_gs.means[0]
-                # rgb_offset = offset_dict['rgb'][0]
-                # offset_norm = torch.norm(rgb_offset, dim=1)  # (N,)
-                # rgb_offset_mask = offset_norm > 0.005  # (N,) 布尔张量
-                # # non-offset
-                # points1 = gs_points[~rgb_offset_mask]
-                # pcd_o3d1 = o3d.geometry.PointCloud()
-                # pcd_o3d1.points = o3d.utility.Vector3dVector(points1.cpu().numpy())
-                # colors1 = rgbs[~rgb_offset_mask]
-                # pcd_o3d1.colors = o3d.utility.Vector3dVector(colors1.cpu().numpy())
-                # o3d.io.write_point_cloud(f"{scene_name}_non.ply", pcd_o3d1)
-                #
-                # points2 = gs_points[rgb_offset_mask]
-                # pcd_o3d2 = o3d.geometry.PointCloud()
-                # pcd_o3d2.points = o3d.utility.Vector3dVector(points2.cpu().numpy())
-                # o3d.io.write_point_cloud(f"{scene_name}_off.ply", pcd_o3d2)
-
-            # rgb_offset_mask = offset_dict['rgb']
-            # points = rgb_gs.means[0]
-            # import matplotlib.pyplot as plt
-            # import matplotlib
-            # from mpl_toolkits.mplot3d import Axes3D
-            # matplotlib.use('Agg')
-            # fig = plt.figure()
-            # ax = fig.add_subplot(111, projection='3d')
-            # points = points[::1000].cpu().numpy()
-            # rgb_offset_mask = rgb_offset_mask[0][::1000].cpu().numpy()
-            # inds = np.nonzero(rgb_offset_mask)[0]
-            # colors = ['blue' for _ in range(len(points))]
-            # for k in inds:
-            #     colors[k] = 'green'
-            # ax.set_zlim(-1.5, 1.5)
-            # ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors, cmap='viridis', marker='o')
-            # plt.savefig('offset_points.png')
-
             tg_intrinsics = batch['intrinsics'][:, -1:]
             tg_extrinsics = batch['poses'][:, -1:]
             tg_labels = batch['labels'][:, -1:]
@@ -595,3 +420,4 @@ class ModelWrapper(LightningModule):
                 "frequency": 1,
             },
         }
+
