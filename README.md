@@ -8,3 +8,13 @@
 
 ![image](overall.png)
 </div>
+
+## Environment
+```
+pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu12
+pip install requirement.txt
+
+cd submodules/diff-gaussian-rasterization
+python setup.py install
+```
+
