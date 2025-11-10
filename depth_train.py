@@ -77,15 +77,13 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_name', type=str, default="scannet")
     parser.add_argument('--cfg', type=str, default="./configs/scannet_depth.yaml")
     parser.add_argument('--mode', type=str, default="train")
+    parser.add_argument('--gpus', type=list, default=[0])
     parser.add_argument('--save_dir', type=str, default="./save")
     parser.add_argument('--ckpt', type=str, default="")
     parser.add_argument('--pre_feature', type=str, default="")
     parser.add_argument('--expname', type=str, default="base")
     parser.add_argument("--save_model", action="store_true", help="save")
-    parser.add_argument("--ddp", action="store_true", help="Use distributed data parallel")
     parser.add_argument("--seed", type=int, default=2024, help="Random seed")
-    parser.add_argument('--encoder', type=str, default='vits', choices=['vits', 'vitb', 'vitl', 'vitg'])
-    parser.add_argument('--load-from', type=str, default='../CLIP_SAM')
 
     args = parser.parse_args()
     args.output_dir = os.path.join(args.save_dir, args.expname)
@@ -95,3 +93,4 @@ if __name__ == "__main__":
     pl.seed_everything(args.seed)
 
     train(args)
+
