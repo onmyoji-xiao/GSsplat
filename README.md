@@ -11,7 +11,10 @@
 
 ## Environment
 ```
-pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu12
+conda create -n gssplat python=3.10
+conda activate gssplat
+
+pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu121
 pip install requirement.txt
 
 cd submodules/diff-gaussian-rasterization
