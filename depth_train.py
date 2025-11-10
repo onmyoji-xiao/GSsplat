@@ -41,7 +41,7 @@ def train(args):
         max_epochs=-1,
         accelerator="gpu",
         logger=logger,
-        devices=[7],
+        devices=args.gpus,
         strategy="ddp_find_unused_parameters_true" if torch.cuda.device_count() > 1 else "auto",
         callbacks=callbacks,
         val_check_interval=cfg.trainer.val_check_interval,
@@ -93,4 +93,3 @@ if __name__ == "__main__":
     pl.seed_everything(args.seed)
 
     train(args)
-
