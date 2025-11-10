@@ -1,0 +1,56 @@
+base:
+  batch_size: 1
+  num_workers: 2
+
+data:
+  top_dir: "../DataSet/Replica_Dataset"
+  train_set_list: "./data/replica_train_split.txt"
+  val_set_list: "./data/replica_test_split.txt"
+  input_width: 320
+  view_num: 8
+  use_depth: true
+
+model:
+  num_blocks: 2
+  out_channel: 64
+  resnet_groups: 16
+  attention_heads: 4
+  downscale_factor: 4
+  upscale_factor: 4
+  gaussian_scale_min: 0.5
+  gaussian_scale_max: 15.0
+  near: 0.1
+  far: 6.0
+  sh_degree: 4
+  render_h: 240
+  render_w: 320
+  render_rgb: true
+  render_sem: true
+  depth_em: false
+  nb_class: 20
+  ignore_label: 19
+  rgb_add: true
+  depth_add: true
+  offset_dim: 4
+  offset_sup: true
+  sem_2d_loss: true
+  aggretate: true
+  background_class: [6,16]
+
+
+trainer:
+  max_steps: 300000
+  val_check_interval: 500
+  gradient_clip_val: 0.5
+  num_sanity_val_steps: 2
+  print_log_every_n_steps: 5000
+  save_top_k: -1
+
+
+optimizer:
+  lr: 0.0005
+  warm_up_steps: 1000
+  cosine_lr: true
+  background_weight: 0.8
+
+

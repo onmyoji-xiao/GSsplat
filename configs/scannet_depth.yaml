@@ -1,0 +1,36 @@
+base:
+  batch_size: 2
+  num_workers: 2
+
+data:
+  top_dir: "../DataSet/Scannet_Dataset"
+  train_set_list: "./data/scannet_train_split.txt"
+  val_set_list: "./data/scannet_test_split.txt"
+  input_width: 320
+  view_num: 8
+  use_depth: false
+
+
+model:
+  num_blocks: 2
+  render_h: 240
+  render_w: 320
+
+
+trainer:
+  max_steps: 200000
+  val_check_interval: 500
+  gradient_clip_val: 0.5
+  num_sanity_val_steps: 2
+  print_log_every_n_steps: 1000
+  every_n_train_steps: 1000
+  save_top_k: -1
+
+
+optimizer:
+  lr: 0.0005
+  warm_up_steps: 100
+  cosine_lr: true
+  background_weight: 0.8
+
+
