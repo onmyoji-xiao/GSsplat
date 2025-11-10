@@ -47,7 +47,7 @@ def train(args):
         max_epochs=-1,
         accelerator="gpu",
         logger=logger,
-        devices=[6],
+        devices=args.gpus,
         strategy="ddp_find_unused_parameters_true" if torch.cuda.device_count() > 1 else "auto",
         callbacks=callbacks,
         val_check_interval=cfg.trainer.val_check_interval,
@@ -83,11 +83,11 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Training script parameters")
     parser.add_argument('--dataset_name', type=str, default="replica")
     parser.add_argument('--cfg', type=str, default="./configs/replica_seg.yaml")
+    parser.add_argument('--gpus', type=int, nargs='+', default=[0])
     parser.add_argument('--mode', type=str, default="train")
     parser.add_argument('--save_dir', type=str, default="./save")
     parser.add_argument('--ckpt', type=str, default="")
     parser.add_argument('--expname', type=str, default="base")
-    parser.add_argument("--ddp", action="store_true", help="Use distributed data parallel")
     parser.add_argument("--seed", type=int, default=2024, help="Random seed")
 
     args = parser.parse_args()
