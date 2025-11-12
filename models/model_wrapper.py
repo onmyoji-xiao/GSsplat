@@ -90,9 +90,9 @@ class ModelWrapper(LightningModule):
         # self.semantic_3d_loss = nn.CosineEmbeddingLoss(reduction='mean')
         self.miou = IoU(num_classes=self.model_cfg.nb_class - 1, ignore_label=self.model_cfg.ignore_label)
 
-    def target_depth_loss(self, gsmeans, ori_depth, intrinsics, extrinsics, offset_mask):
+    def target_depth_loss(self, gsmeans, ori_depth, intrinsics, extrinsics, offset):
         B, V, H, W = ori_depth.shape
-
+        offset_mask = (offset != 0).any(dim=-1)
         loss = torch.zeros(1, dtype=torch.float).to(ori_depth.device)
         for bi in range(B):
             points = gsmeans[bi][~offset_mask[bi]]
@@ -420,4 +420,5 @@ class ModelWrapper(LightningModule):
                 "frequency": 1,
             },
         }
+
 
