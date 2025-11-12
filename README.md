@@ -32,6 +32,13 @@ For download instructions, please refer to the [GSNeRF](https://github.com/TimCh
 ### Pre-trained Depth Estimation Model
 First, obtain the pre-trained depth estimation model. Execute the following command
 ```
-python depth_train.py --cfg ./configs/scannet_depth.yaml --save_dir ./save --gpus [0]
+python depth_train.py --cfg ./configs/scannet_depth.yaml --dataset_name scannet--save_dir ./save --gpus 0
+python depth_train.py --cfg ./configs/scannet_depth.yaml --dataset_name replica--save_dir ./save --gpus 0
 ```
 or directly download the [CasMVSNet model](https://drive.google.com/drive/folders/14QsAmHbixd9V53xzFkqwz05miRFdM2mF?usp=sharing) we have trained, including versions with different numbers of views.
+
+### Gaussian Model
+```
+python train.py --cfg ./configs/scannet_seg.yaml --dataset_name scannet --save_dir ./save --gpus 0
+python train.py --cfg ./configs/replica_seg.yaml --dataset_name replica --save_dir ./save --gpus 0
+```
