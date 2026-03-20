@@ -298,8 +298,9 @@ class ModelWrapper(LightningModule):
                 rendered_sem_image = rearrange(results["semantic"], "b c h w  -> b h w c")
                 semantic_pred = torch.argmax(rendered_sem_image, dim=-1)
 
-                semantic_pred = rearrange(self.all_gather(semantic_pred), "g b h w  -> (g b) h w")
-                tg_labels = rearrange(self.all_gather(tg_labels), "g b v h w -> (g b v) h w")
+                if self.trainer.world_size > 1:
+                    semantic_pred = rearrange(self.all_gather(semantic_pred), "g b h w -> (g b) h w")
+                    tg_labels = rearrange(self.all_gather(tg_labels), "g b v h w -> (g b v) h w")
 
                 for i in range(semantic_pred.shape[0]):
                     iou_score = self.miou(
@@ -339,10 +340,11 @@ class ModelWrapper(LightningModule):
                 mask = depth_target > 0
                 mask = rearrange(mask, "b v h w -> (b v) h w")
                 tg_images = rearrange(tg_images, "b v c h w -> (b v) c h w")
-
-                rendered_images = rearrange(self.all_gather(results["rgb"]), "g b c h w -> (g b) c h w")
-                mask = rearrange(self.all_gather(mask), "g b h w -> (g b) h w")
-                tg_images = rearrange(self.all_gather(tg_images), "g b c h w -> (g b) c h w")
+                rendered_images = results["rgb"]
+                if self.trainer.world_size > 1:
+                    rendered_images = rearrange(self.all_gather(rendered_images), "g b c h w -> (g b) c h w")
+                    mask = rearrange(self.all_gather(mask), "g b h w -> (g b) h w")
+                    tg_images = rearrange(self.all_gather(tg_images), "g b c h w -> (g b) c h w")
 
                 for i in range(tg_images.shape[0]):
                     img_gt_masked = tg_images[i] * mask[i][None]
