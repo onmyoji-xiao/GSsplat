@@ -5,19 +5,12 @@ body {
     line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px;
 }
 
+/* 英雄区 */
 .hero {
     text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white; border-radius: 10px; margin-bottom: 40px;
 }
-.hero h1 {
-    font-size: 2.6rem;             
-    line-height: 1.35;           
-    font-weight: 700;              
-    letter-spacing: -0.02em;     
-    max-width: 950px;            
-    margin: 0 auto 20px auto;       /* 保持居中 */
-    word-break: break-word;         /* 长单词自动换行 */
-}
+.hero h1 { font-size: 1.8rem; margin-bottom: 20px; }
 .authors { font-size: 1.1rem; margin: 15px 0; }
 .affiliations { font-size: 0.9rem; opacity: 0.9; margin: 10px 0; }
 .links { margin-top: 25px; }
