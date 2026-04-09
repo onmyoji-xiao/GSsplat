@@ -6,7 +6,7 @@
 
 [Code](https://github.com/onmyoji-xiao/GSsplat) | [Paper](https://arxiv.org/abs/2505.04659) | [Project Page](#)  
 
-![image](overall.png)
+![image](images/overall.png)
 </div>
 
 ## Environment

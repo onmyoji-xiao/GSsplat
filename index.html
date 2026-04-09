@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSsplat: Generalizable Semantic Gaussian Splatting</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 可选：添加Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="hero">
+        <h1>GSsplat: Generalizable Semantic Gaussian Splatting for Novel-View Synthesis in 3D Scenes</h1>
+        <div class="authors">
+            Feng Xiao<sup>1</sup>, Hongbin Xu<sup>2</sup>, Wanlin Liang<sup>1</sup>, Wenxiong Kang<sup>1,*</sup>
+        </div>
+        <div class="affiliations">
+            <sup>1</sup>South China University of Technology &nbsp;|&nbsp; 
+            <sup>2</sup>ByteDance Seed
+        </div>
+        <div class="links">
+            <a href="files/paper.pdf" class="btn"><i class="fas fa-file-pdf"></i> Paper</a>
+            <a href="https://github.com/onmyoji-xiao/GSsplat" class="btn"><i class="fab fa-github"></i> Code</a>
+            <a href="#bibtex" class="btn"><i class="fas fa-quote-right"></i> BibTeX</a>
+        </div>
+    </header>
+
+    <section class="abstract">
+        <h2>Abstract</h2>
+        <p>The semantic synthesis of unseen scenes from multiple viewpoints is crucial for research in 3D scene understanding. Current methods are capable of rendering novel-view images and semantic maps by reconstructing generalizable Neural Radiance Fields. However, they often suffer from limitations in speed and segmentation performance. We propose a generalizable semantic Gaussian Splatting method (GSsplat) for efficient novel-view synthesis. Our model predicts the positions and attributes of scene-adaptive Gaussian distributions in a single inference, replacing the densification and pruning processes of traditional scene-specific Gaussian Splatting. In the multi-task framework, a hybrid network is designed to extract color and semantic information and predict Gaussian parameters. To improve the spatial perception of Gaussians for high-quality rendering, we design a new offset learning module using group-based supervision and a point-level interaction module with spatial unit aggregation. When evaluated with varying numbers of multi-view inputs, GSsplat achieves state-of-the-art performance for semantic synthesis at the fastest speed.
+		</p>
+    </section>
+
+
+    <section class="method">
+        <h2>Framework</h2>
+        <img src="images/overall.png" alt="Framework" class="responsive-img">
+        <p>Overview of GSsplat.</p>
+    </section>
+
+    <!-- 5. 实验结果 -->
+    <section class="results">
+        <h2>Results</h2>
+        
+        <h3>🎨 Semantic Rendering Comparison</h3>
+        <div class="result-grid">
+            <img src="images/res.png" alt="results">
+        </div>
+        
+        <h3>⚡ Inference Speed</h3>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>mIoU↑</th>
+                    <th>Time(s)↓</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>GSNeRF</td><td>58.30%</td><td>9.62</td></tr>
+                <tr><td>MVsplat*</td><td>47.56%</td><td>0.61</td></tr>
+                <tr><td><strong>GSsplat (Ours)</strong></td><td><strong>60.38%</strong></td><td><strong>0.48</strong></td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 6. BibTeX -->
+    <section id="bibtex" class="bibtex">
+        <h2>BibTeX</h2>
+        <pre><code>@article{xiao2025gssplat,
+  title={GSsplat: Generalizable semantic Gaussian splatting for novel-view synthesis in 3D scenes},
+  author={Xiao, Feng and Xu, Hongbin and Liang, Wanlin and Kang, Wenxiong},
+  journal={arXiv preprint arXiv:2505.04659},
+  year={2025}
+}</code></pre>
+    </section>
+
+    <!-- 7. 页脚 -->
+    <footer>
+        <p>© 2026 GSsplat Project | <a href="https://github.com/onmyoji-xiao/GSsplat">GitHub</a></p>
+    </footer>
+</body>
+</html>
