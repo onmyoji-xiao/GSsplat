@@ -26,10 +26,6 @@ h2 {
     border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 20px; color: #444;
 }
 
-/* 图片响应式 */
-.responsive-img {
-    width: 100%; max-width: 1000px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
 .caption { text-align: center; font-size: 0.9rem; color: #666; margin-top: 10px; }
 
 /* 表格样式 */
@@ -56,4 +52,40 @@ footer {
 @media (max-width: 768px) {
     .hero h1 { font-size: 1.4rem; }
     .btn { padding: 8px 20px; font-size: 0.9rem; }
+}
+
+/* ================= 图片全局居中与自适应 ================= */
+section img {
+    display: block;               /* 转为块级元素，使 margin:auto 生效 */
+    margin: 0 auto;               /* 水平居中 */
+    max-width: 100%;              /* 不超过父容器宽度 */
+    height: auto;                 /* 高度自动，保持原始宽高比 */
+    border-radius: 8px;           /* 圆角（可选） */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 轻微阴影提升质感 */
+}
+
+/* 可选：在大屏幕上限制最大宽度，避免图片拉伸过长 */
+@media (min-width: 1200px) {
+    section img { max-width: 1000px; }
+}
+
+/* 特殊处理：多图并排网格（如 Results 区域） */
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+.result-grid img {
+    margin: 0;                    /* 网格内取消居中，由 Grid 控制 */
+    width: 100%;
+}
+
+/* 图注样式优化 */
+.caption, figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 10px;
+    line-height: 1.5;
 }

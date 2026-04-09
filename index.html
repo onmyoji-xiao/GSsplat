@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GSsplat: Generalizable Semantic Gaussian Splatting</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- 可选：添加Font Awesome图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
 
@@ -20,7 +19,7 @@
             <sup>2</sup>ByteDance Seed
         </div>
         <div class="links">
-            <a href="files/paper.pdf" class="btn"><i class="fas fa-file-pdf"></i> Paper</a>
+            <a href="https://arxiv.org/pdf/2505.04659" class="btn"><i class="fas fa-file-pdf"></i> Paper</a>
             <a href="https://github.com/onmyoji-xiao/GSsplat" class="btn"><i class="fab fa-github"></i> Code</a>
             <a href="#bibtex" class="btn"><i class="fas fa-quote-right"></i> BibTeX</a>
         </div>
@@ -36,34 +35,9 @@
     <section class="method">
         <h2>Framework</h2>
         <img src="images/overall.png" alt="Framework" class="responsive-img">
-        <p>Overview of GSsplat.</p>
+        <p>Given N source views and camera poses, our model directly predicts the semantic Gaussian and color Gaussian parameters from RGB and depth information for 3D scene reconstruction. Firstly, the hybrid network uses a multi-view encoding module to extract 2D semantic and color features. Next, the features are decoded to the original image resolution and unprojected per pixel to the 3D space. After point-level interaction and Gaussian mapping, the semantic and color Gaussian radiance fields are constructed by the predicted parameters, and novel views are rendered through the Gaussian splatting operation.</p>
     </section>
 
-    <!-- 5. 实验结果 -->
-    <section class="results">
-        <h2>Results</h2>
-        
-        <h3>🎨 Semantic Rendering Comparison</h3>
-        <div class="result-grid">
-            <img src="images/res.png" alt="results">
-        </div>
-        
-        <h3>⚡ Inference Speed</h3>
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>Method</th>
-                    <th>mIoU↑</th>
-                    <th>Time(s)↓</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>GSNeRF</td><td>58.30%</td><td>9.62</td></tr>
-                <tr><td>MVsplat*</td><td>47.56%</td><td>0.61</td></tr>
-                <tr><td><strong>GSsplat (Ours)</strong></td><td><strong>60.38%</strong></td><td><strong>0.48</strong></td></tr>
-            </tbody>
-        </table>
-    </section>
 
     <!-- 6. BibTeX -->
     <section id="bibtex" class="bibtex">
