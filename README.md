@@ -4,7 +4,7 @@
 **Feng Xiao** · **Hongbin Xu** · **Wanlin Liang** · **Wenxiong Kang**  
 *South China University of Technology*  
 
-[Code](https://github.com/onmyoji-xiao/GSsplat) | [Paper](https://arxiv.org/abs/2505.04659) | [Project Page](#)  
+[Code](https://github.com/onmyoji-xiao/GSsplat) | [Paper](https://arxiv.org/abs/2505.04659) | [Project Page](https://onmyoji-xiao.github.io/GSsplat/)  
 
 ![image](images/overall.png)
 </div>
