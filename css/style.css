@@ -103,9 +103,10 @@ section img {
 /* style.css - 视频展示区域专用样式 */
 .video-grid-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 30px;
+  align-items: start; /* 关键：防止高度不一致时网格被强行拉伸 */
 }
 
 .video-box {
@@ -114,10 +115,14 @@ section img {
   padding: 10px;
   border-radius: 8px;
   text-align: center;
+  overflow: hidden;
 }
 
 .video-box video {
   width: 100%;
+  height: auto;          /* 核心：高度自动，严格保持原始宽高比 */
+  display: block;
+  object-fit: contain;   /* 安全兜底：确保内容完整显示，绝不拉伸/裁剪 */
   border-radius: 4px;
   margin-bottom: 8px;
   background-color: #000;
@@ -129,9 +134,10 @@ section img {
   line-height: 1.4;
 }
 
-/* 移动端自适应：屏幕 ≤768px 时自动切换为单列 */
+/* 移动端自适应 */
 @media (max-width: 768px) {
   .video-grid-container {
     grid-template-columns: 1fr;
   }
 }
+
