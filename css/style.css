@@ -99,3 +99,39 @@ section img {
     margin-top: 10px;
     line-height: 1.5;
 }
+
+/* style.css - 视频展示区域专用样式 */
+.video-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.video-box {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.video-box video {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #000;
+}
+
+.video-caption {
+  font-size: 0.9em;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* 移动端自适应：屏幕 ≤768px 时自动切换为单列 */
+@media (max-width: 768px) {
+  .video-grid-container {
+    grid-template-columns: 1fr;
+  }
+}

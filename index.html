@@ -38,13 +38,48 @@
         <p>Given N source views and camera poses, our model directly predicts the semantic Gaussian and color Gaussian parameters from RGB and depth information for 3D scene reconstruction. Firstly, the hybrid network uses a multi-view encoding module to extract 2D semantic and color features. Next, the features are decoded to the original image resolution and unprojected per pixel to the 3D space. After point-level interaction and Gaussian mapping, the semantic and color Gaussian radiance fields are constructed by the predicted parameters, and novel views are rendered through the Gaussian splatting operation.</p>
     </section>
 	
+	
+	
+	
 	<section class="visualize">
         <h2>Result</h2>
-        <img src="images/res.png" alt="Framework" class="responsive-img">
-        <p> </p>
+
+		<div class="video-grid-container">
+		  <!-- 视频 1 -->
+		  <div class="video-box">
+			<video autoplay muted loop playsinline>
+			  <source src="images/demo1.mp4" type="video/mp4">
+			</video>
+			<div class="video-caption"><strong>Scene A:</strong> Indoor reconstruction</div>
+		  </div>
+		  
+		  <!-- 视频 2 -->
+		  <div class="video-box">
+			<video autoplay muted loop playsinline>
+			  <source src="images/demo2.mp4" type="video/mp4">
+			</video>
+			<div class="video-caption"><strong>Scene B:</strong> Complex geometry</div>
+		  </div>
+
+		  <!-- 视频 3 -->
+		  <div class="video-box">
+			<video autoplay muted loop playsinline>
+			  <source src="images/demo3.mp4" type="video/mp4">
+			</video>
+			<div class="video-caption"><strong>NVS:</strong> Smooth camera path</div>
+		  </div>
+
+		  <!-- 视频 4 -->
+		  <div class="video-box">
+			<video autoplay muted loop playsinline>
+			  <source src="images/demo4.mp4" type="video/mp4">
+			</video>
+			<div class="video-caption"><strong>Generalization:</strong> Unseen scene</div>
+		  </div>
+		</div>
+	<img src="images/res.png" alt="Framework" class="responsive-img">
+	<p> </p>
 		</section>
-
-
     <!-- 6. BibTeX -->
     <section id="bibtex" class="bibtex">
         <h2>BibTeX</h2>
